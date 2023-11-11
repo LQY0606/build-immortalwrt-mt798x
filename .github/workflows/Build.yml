@@ -21,7 +21,7 @@ env:
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   TZ: Asia/Shanghai
-  DEVICE: 360t7
+  DEVICE: ABT_ASR3000
   UPLOAD_OUTPUT: true
 
 jobs:
@@ -61,6 +61,8 @@ jobs:
       run: |
         cd openwrt
         echo "src-git helloworld https://github.com/fw876/helloworld.git;main" >> "feeds.conf.default"
+        echo "src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> "feeds.conf.default"
+        echo "src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main" >> "feeds.conf.default"
         cat feeds.conf.default
         ./scripts/feeds update -a
         #./scripts/feeds install -a
@@ -69,10 +71,13 @@ jobs:
         rm -rf feeds/packages/net/xray-plugin
         rm -rf feeds/packages/net/simple-obfs
         rm -rf feeds/luci/applications/luci-app-ssr-plus
+        rm -rf feeds/luci/applications/luci-app-passwall
+        rm -rf feeds/luci/applications/luci-app-smartdns
+        git clone -b master --depth 1 https://github.com/pymumu/luci-app-smartdns.git feeds/luci/applications/luci-app-smartdns
         # update golang version
         rm -rf feeds/packages/lang/golang
-        #svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang feeds/packages/lang/golang
-        svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang feeds/packages/lang/golang
+        git clone https://github.com/sbwml/packages_lang_golang -b 21.x feeds/packages/lang/golang
+        
         rm -rf feeds/packages/net/miniupnpd
         svn co https://github.com/immortalwrt/packages/branches/openwrt-18.06/net/miniupnpd feeds/packages/net/miniupnpd
         git clone -b js --depth 1 https://github.com/gngpp/luci-theme-design.git  package/luci-theme-design
@@ -81,14 +86,14 @@ jobs:
         find ./ | grep Makefile | grep mosdns | xargs rm -f
         git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
         git clone https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
-        git clone https://github.com/rufengsuixing/luci-app-adguardhome package/luci-app-adguardhome
+        # git clone https://github.com/rufengsuixing/luci-app-adguardhome package/luci-app-adguardhome
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
     - name: 修改默认配置
       run: |
         cd openwrt
-        sed -i 's/192.168.1.1/192.168.68.1/g' package/base-files/files/bin/config_generate
+        sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
 
     - name: 加载自定义编译配置
       if: github.event.inputs.custom_config == 'true'
