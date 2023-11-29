@@ -68,6 +68,7 @@ jobs:
         #./scripts/feeds install -a
         # remove old package
         rm -rf feeds/packages/net/xray-core
+        rm -rf feeds/packages/net/shadowsocks-rust
         rm -rf feeds/packages/net/xray-plugin
         rm -rf feeds/packages/net/simple-obfs
         rm -rf feeds/luci/applications/luci-app-ssr-plus
